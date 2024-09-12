@@ -1,0 +1,7 @@
+driver: cloudinary
+dcloudinary:
+  cloud_name: dpv0zhza7
+  api_key: 239438387238765
+  api_secret: gGHQY4BNalWAmv9G4PtMT-aUSyE
+local:
+  root: storage/app/public
