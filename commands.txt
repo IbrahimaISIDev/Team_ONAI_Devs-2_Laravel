@@ -3,7 +3,7 @@ Pour tester l'archivage quotidien et l'envoi de récapitulatifs hebdomadaires :
 Configurez une tâche cron pour exécuter php artisan schedule:run toutes les minutes.
 Vous pouvez forcer l'exécution des jobs avec les commandes suivantes :
 
-php artisan job:dispatch ArchiveDettesPayees  -> Pour lancer l'archivage quotidien des dettes soldées
+php artisan dispatch:archivedettespayees  -> Pour lancer l'archivage quotidien des dettes soldées
 php artisan dispatch:recap-hebdo  -> pour envoyer les récapitulatifs aux clients (EnvoyerRecapitulatifHebdomadaire)
 
 php artisan schedule:work  --> Exécution du scheduler

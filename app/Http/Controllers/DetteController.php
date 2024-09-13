@@ -16,7 +16,6 @@ class DetteController extends Controller
         $this->detteService = $detteService;
     }
 
-    // Créer une nouvelle dette
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -33,7 +32,6 @@ class DetteController extends Controller
         return response()->json($dette, 201);
     }
 
-    // Ajouter un paiement à une dette existante
     public function addPaiement(Request $request, Dette $dette)
     {
         $data = $request->validate([
@@ -45,7 +43,11 @@ class DetteController extends Controller
         return response()->json($dette);
     }
 
-    // Afficher les détails d'une dette spécifique
+    // public function show(Dette $dette)
+    // {
+    //     return response()->json($dette->load('paiements'));
+    // }
+
     public function show(Dette $dette)
     {
         $dette->load('paiements');
@@ -55,45 +57,8 @@ class DetteController extends Controller
             'estSoldee' => $dette->montantRestant <= 0,
         ]);
     }
-
-    // Afficher les dettes d'un client spécifique
     public function clientDettes(Client $client)
     {
         return response()->json($client->dettes()->with('paiements')->get());
-    }
-
-    // Archiver les dettes soldées
-    public function archive()
-    {
-        $this->detteService->archiveSoldDettes();
-        return response()->json(['message' => 'Dettes archivées avec succès']);
-    }
-
-    // Afficher toutes les dettes archivées
-    public function showArchived()
-    {
-        $dettes = $this->detteService->getArchivedDettes();
-        return response()->json($dettes);
-    }
-
-    // Afficher les dettes archivées d'un client spécifique
-    public function showClientArchived($clientId)
-    {
-        $dettes = $this->detteService->getClientArchivedDettes($clientId);
-        return response()->json($dettes);
-    }
-
-    // Restaurer une dette archivée
-    public function restoreDette($detteId)
-    {
-        $this->detteService->restoreArchivedDette($detteId);
-        return response()->json(['message' => 'Dette restaurée avec succès']);
-    }
-
-    // Envoyer un rapport hebdomadaire des dettes
-    public function sendWeeklyReport($clientId)
-    {
-        $this->detteService->sendWeeklyReport($clientId);
-        return response()->json(['message' => 'Rapport envoyé avec succès']);
     }
 }
