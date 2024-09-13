@@ -146,7 +146,6 @@
             @if ($photoData)
                 <img src="{{ $photoData }}" alt="Photo du client">
             @else
-                <img src="{{ asset('path/to/default/image.png') }}" alt="Photo par défaut">
             @endif
         </div>
 
