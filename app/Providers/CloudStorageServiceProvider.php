@@ -2,9 +2,10 @@
 
 namespace App\Providers;
 
+use App\Services\CloudStorageService;
 use Illuminate\Support\ServiceProvider;
-use App\Services\CloudStorage\CloudStorageInterface;
 use App\Services\CloudStorage\CloudStorageFactory;
+use App\Services\CloudStorage\CloudStorageInterface;
 
 class CloudStorageServiceProvider extends ServiceProvider
 {
@@ -13,6 +14,11 @@ class CloudStorageServiceProvider extends ServiceProvider
         $this->app->singleton(CloudStorageInterface::class, function ($app) {
             $config = config('cloud_storage');
             return CloudStorageFactory::create($config['driver']);
+
+            $this->app->bind(
+                CloudStorageInterface::class,
+                CloudStorageService::class
+            );
         });
     }
 

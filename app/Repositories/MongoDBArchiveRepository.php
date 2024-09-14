@@ -14,6 +14,7 @@ class MongoDBArchiveRepository implements ArchiveRepositoryInterface
     {
         $this->client = new Client(env('MONGODB_URI'));
         $this->database = $this->client->selectDatabase(env('MONGODB_DATABASE'));
+        //dd($this->database);
     }
 
     public function archiver(array $data)

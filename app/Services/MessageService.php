@@ -2,20 +2,23 @@
 
 namespace App\Services;
 
+use App\Interfaces\MessageServiceInterface;
+use App\Repositories\Interfaces\MessageRepositoryInterface;
 use App\Models\Client;
 use Illuminate\Support\Facades\Log;
-use App\Repositories\Interfaces\MessageRepositoryInterface;
 
-class MessageService
+class MessageService implements MessageServiceInterface
 {
     protected $messageRepository;
+    protected $factureService;
 
-    public function __construct(MessageRepositoryInterface $messageRepository)
+    public function __construct(MessageRepositoryInterface $messageRepository, FactureService $factureService)
     {
         $this->messageRepository = $messageRepository;
+        $this->factureService = $factureService;
     }
 
-    public function sendMessage($to, $message)
+    public function sendMessage(string $to, string $message)
     {
         // Validate phone number format
         if (!$this->isValidPhoneNumber($to)) {
@@ -30,10 +33,33 @@ class MessageService
         $clients = Client::with('dettes')->get();
 
         foreach ($clients as $client) {
+            //dd($client); // Vérifiez que c'est un objet Client et non une chaîne
             $totalDettes = $client->dettes->sum('montant');
 
             if ($totalDettes > 0) {
-                $message = "Récapitulatif hebdomadaire : Votre total de dettes est de {$totalDettes} FCFA.";
+                // Assurez-vous que $client est bien un objet Client
+                //$client = Client::find($clientId); // Assurez-vous que $clientId est valide
+                //$pdfFile = $this->factureService->generateRecapitulatif($client);
+
+                //$pdfFile = $this->factureService->generateRecapitulatif($client->surname);
+
+                $message = "Objet : Récapitulatif de vos Dettes - Important\n\n"
+                    . "Cher(e) {$client->surname},\n\n"
+                    . "Nous vous informons que vous avez un total de **{$totalDettes} FCFA** en dettes. "
+                    . "Veuillez consulter le récapitulatif détaillé de vos dettes dans le fichier PDF ci-joint.\n\n"
+                    . "Voici un résumé des dettes en cours :\n";
+
+                foreach ($client->dettes as $dette) {
+                    $message .= "- **{$dette->montant} FCFA** due depuis le " . date('d/m/Y', strtotime($dette->created_at)) . "\n";
+                }
+
+                $message .= "\nLa facture détaillée a été jointe à ce message pour votre référence.\n\n"
+                    . "Si vous avez des questions concernant ce récapitulatif ou si vous avez besoin d'assistance supplémentaire, "
+                    . "n'hésitez pas à nous contacter à l'adresse suivante : <strong>support@gestion-shop.com</strong>.\n\n"
+                    . "Merci pour votre collaboration et votre prompt règlement.\n\n"
+                    . "Cordialement,\n"
+                    . "L’équipe de Gestion-Shop";
+
                 $formattedNumber = $this->formatPhoneNumber($client->telephone);
 
                 Log::info("Sending message to {$formattedNumber}: {$message}");
@@ -41,7 +67,6 @@ class MessageService
                 try {
                     $this->sendMessage($formattedNumber, $message);
                 } catch (\Exception $e) {
-                    // Vérifiez si l'erreur concerne un numéro non vérifié
                     if (strpos($e->getMessage(), 'unverified') !== false) {
                         Log::error("Failed to send message to {$formattedNumber}: Number not verified or invalid. Please check the number verification status.");
                     } else {
@@ -51,7 +76,6 @@ class MessageService
             }
         }
     }
-
 
     private function formatPhoneNumber($number)
     {
@@ -79,17 +103,6 @@ class MessageService
             return ''; // Retourner une chaîne vide si le numéro est invalide
         }
     }
-
-
-
-    // private function isValidPhoneNumber($number)
-    // {
-    //     // Strip non-numeric characters except the plus sign
-    //     $cleanNumber = preg_replace('/[^0-9+]/', '', $number);
-
-    //     // Check if the number starts with a plus sign and has the correct length
-    //     return preg_match('/^\+\d{10,15}$/', $cleanNumber);
-    // }
 
     private function isValidPhoneNumber($number)
     {

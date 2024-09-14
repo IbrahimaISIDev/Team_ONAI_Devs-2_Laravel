@@ -2,10 +2,11 @@
 
 namespace App\Console;
 
-use App\Console\Commands\DispatchRecapitulatifHebdomadaire;
-use App\Console\Commands\DispatchArchiveDettesPayees;
+use App\Services\MessageService;
 use Illuminate\Console\Scheduling\Schedule;
+use App\Console\Commands\DispatchArchiveDettesPayees;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use App\Console\Commands\DispatchRecapitulatifHebdomadaire;
 
 class Kernel extends ConsoleKernel
 {
@@ -18,6 +19,11 @@ class Kernel extends ConsoleKernel
         $schedule->command('dispatch:archive-dettes-payees')->daily();
         //$schedule->command('dispatch:archivedettespayees')->daily();
         $schedule->command('dispatch:recap-hebdo')->weekly();
+
+        // Envoie le récapitulatif des dettes chaque lundi à 8h
+        $schedule->call(function () {
+            app(MessageService::class)->envoyerRecapitulatifHebdomadaire();
+        })->weeklyOn(1, '8:00');
     }
 
     /**

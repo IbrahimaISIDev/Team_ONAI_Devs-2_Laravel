@@ -27,10 +27,10 @@ return [
         'scheme' => 'https',
     ],
 
-    'vonage' => [
-        'api_key' => env('VONAGE_API_KEY'),
-        'api_secret' => env('VONAGE_API_SECRET'),
-        'sender_id' => env('VONAGE_SENDER_ID'),
+    'infobip' => [
+        'base_url' => env('INFOBIP_BASE_URL'),
+        'api_key' => env('INFOBIP_API_KEY'),
+        'sender' => env('INFOBIP_SENDER'),
     ],
 
     'postmark' => [
@@ -44,10 +44,10 @@ return [
     ],
 
     'message' => [
-        'driver' => env('MESSAGE_DRIVER', 'twilio'), // 'twilio' or 'infobip'
+        'driver' => env('MESSAGE_DRIVER', 'infobip'), // 'twilio' or 'infobip'
     ],
     'archive' => [
-        'driver' => env('ARCHIVE_DRIVER', 'firebase'), // 'firebase' or 'mongodb'
+        'driver' => env('ARCHIVE_DRIVER', 'mongodb'), // 'firebase' or 'mongodb'
     ],
 
 ];
