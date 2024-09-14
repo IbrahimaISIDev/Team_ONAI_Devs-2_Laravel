@@ -12,7 +12,7 @@ class DispatchArchiveDettesPayees extends Command
     protected $signature = 'dispatch:archivedettespayees';
     
     // La description de la commande
-    protected $description = 'Dispatch the ArchiveDettesPayees job';
+    protected $description = 'Déclenche le job pour archiver les dettes payées';
 
     protected $archiveService;
 
@@ -38,7 +38,7 @@ class DispatchArchiveDettesPayees extends Command
         // Dispatcher le job avec l'instance d'ArchiveService injectée
         ArchiveDettesPayees::dispatch($this->archiveService);
 
-        $this->info('ArchiveDettesPayees job dispatched!');
+        $this->info('Le job d\'archivage des dettes payées a été déclenché avec succès !');
 
         return 0; // Code de succès
     }
