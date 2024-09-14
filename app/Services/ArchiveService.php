@@ -30,9 +30,9 @@ class ArchiveService
 
             $data = [
                 'dette' => $dette->toArray(),
-                'client' => $dette->client->toArray(),
-                'articles' => $dette->articles->toArray(),
-                'paiements' => $dette->paiements->toArray(),
+                // 'client' => $dette->client->toArray(),
+                // 'articles' => $dette->articles->toArray(),
+                // 'paiements' => $dette->paiements->toArray(),
             ];
 
             Log::info('Data prepared for archiving: ', $data);
