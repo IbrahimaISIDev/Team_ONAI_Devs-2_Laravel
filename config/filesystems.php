@@ -54,11 +54,17 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
         ],
+
         'cloudinary' => [
             'driver' => 'cloudinary',
-            'api_key' => env('239438387238765'),
-            'api_secret' => env('gGHQY4BNalWAmv9G4PtMT-aUSyE'),
-            'cloud_name' => env('dpv0zhza7'),
+            'api_key' => env('CLOUDINARY_API_KEY'),
+            'api_secret' => env('CLOUDINARY_API_SECRET'),
+            'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+        ],
+
+        'cloud_storage' => [
+            'driver' => 'local',
+            'root' => storage_path('app/cloud_storage'),
         ],
 
     ],

@@ -1,0 +1,98 @@
+{
+    "info": {
+      "name": "Archive Routes",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "1. GET Archived Dettes",
+        "request": {
+          "method": "GET",
+          "url": {
+            "raw": "http://localhost:3000/api/v1/archive/dettes",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "3000",
+            "path": ["api", "v1", "archive", "dettes"],
+            "query": [
+              {
+                "key": "client_id",
+                "value": "1",
+                "disabled": true
+              },
+              {
+                "key": "date",
+                "value": "2023-09-15",
+                "disabled": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "2. GET Client Archived Dettes",
+        "request": {
+          "method": "GET",
+          "url": {
+            "raw": "http://localhost:3000/api/v1/archive/clients/1/dettes",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "3000",
+            "path": ["api", "v1", "archive", "clients", "1", "dettes"]
+          }
+        }
+      },
+      {
+        "name": "3. GET Archived Dette Details",
+        "request": {
+          "method": "GET",
+          "url": {
+            "raw": "http://localhost:3000/api/v1/archive/dettes/1",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "3000",
+            "path": ["api", "v1", "archive", "dettes", "1"]
+          }
+        }
+      },
+      {
+        "name": "4. GET Restore Archived Dettes by Date",
+        "request": {
+          "method": "GET",
+          "url": {
+            "raw": "http://localhost:3000/api/v1/restaure/2023-09-15",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "3000",
+            "path": ["api", "v1", "restaure", "2023-09-15"]
+          }
+        }
+      },
+      {
+        "name": "5. GET Restore Specific Dette",
+        "request": {
+          "method": "GET",
+          "url": {
+            "raw": "http://localhost:3000/api/v1/restaure/dette/1",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "3000",
+            "path": ["api", "v1", "restaure", "dette", "1"]
+          }
+        }
+      },
+      {
+        "name": "6. GET Restore Client Dettes",
+        "request": {
+          "method": "GET",
+          "url": {
+            "raw": "http://localhost:3000/api/v1/restaure/client/1",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "3000",
+            "path": ["api", "v1", "restaure", "client", "1"]
+          }
+        }
+      }
+    ]
+  }

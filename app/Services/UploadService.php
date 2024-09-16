@@ -2,10 +2,11 @@
 
 namespace App\Services;
 
+use Exception;
+use Illuminate\Http\UploadedFile;
+use App\Services\CloudStorage\CloudinaryStorage;
 use App\Services\CloudStorage\CloudStorageFactory;
 use App\Services\CloudStorage\CloudStorageInterface;
-use Illuminate\Http\UploadedFile;
-use Exception;
 
 class UploadService
 {

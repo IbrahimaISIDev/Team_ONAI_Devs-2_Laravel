@@ -48,6 +48,7 @@ class ArchiveService
 
         Log::info('Nombre de dettes soldées trouvées : ' . $dettesSoldées->count());
 
+        $archivedCount = 0;
         foreach ($dettesSoldées as $dette) {
             Log::info('Traitement de la dette ID : ' . $dette->id);
 
@@ -59,63 +60,52 @@ class ArchiveService
             Log::info('Données préparées pour l\'archivage : ', $data);
 
             try {
-                // Archiver la dette
-                $this->repository->archiver($data);
-                Log::info('Dette archivée avec succès : ' . $dette->id);
+                // Archiver la dette dans MongoDB
+                $archivedId = $this->cloudStorage->store($data);
+                Log::info('Dette archivée avec succès : ' . $dette->id . ', ID MongoDB : ' . $archivedId);
 
                 // Supprimer les paiements, articles et la dette elle-même
                 $this->deleteDetteRelations($dette);
+                $archivedCount++;
             } catch (\Exception $e) {
                 Log::error('Erreur lors de l\'archivage de la dette ID ' . $dette->id . ' : ' . $e->getMessage());
             }
         }
 
-        Log::info('Fin de la méthode archiveDettesPayees');
+        Log::info('Fin de la méthode archiveDettesPayees. Nombre total de dettes archivées : ' . $archivedCount);
     }
 
     // Méthode pour centraliser la suppression des paiements, articles, et dettes
     protected function deleteDetteRelations($dette)
     {
-        $dette->paiements()->delete();
-        Log::info('Paiements supprimés pour la dette : ' . $dette->id);
+        try {
+            $dette->paiements()->delete();
+            Log::info('Paiements supprimés pour la dette : ' . $dette->id);
 
-        $dette->articles()->delete();
-        Log::info('Articles supprimés pour la dette : ' . $dette->id);
+            $dette->articles()->delete();
+            Log::info('Articles supprimés pour la dette : ' . $dette->id);
 
-        $dette->delete();
-        Log::info('Dette supprimée : ' . $dette->id);
+            $dette->delete();
+            Log::info('Dette supprimée : ' . $dette->id);
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la suppression des relations de la dette ID ' . $dette->id . ' : ' . $e->getMessage());
+        }
     }
-
     // Récupérer les dettes archivées
-    public function getArchivedDettes($clientId = null, $date = null, $page = 1, $perPage = 20)
+    public function getArchivedDettes($clientId = null, $date = null)
     {
         $query = [];
         if ($clientId) {
-            $query['client_id'] = $clientId;
+            $query['dette.client_id'] = $clientId;
         }
         if ($date) {
-            $query['archive_at'] = $date;
+            $query['archived_at'] = ['$gte' => $date];
         }
-
-        Log::info('ArchiveService: Retrieving archived dettes', [
-            'query' => $query,
-            'page' => $page,
-            'perPage' => $perPage,
-            'storage_type' => get_class($this->cloudStorage)
-        ]);
-
-        $dettes = $this->cloudStorage->retrieve($query, $page, $perPage);
-
-        Log::info('ArchiveService: Retrieved archived dettes', [
-            'count' => count($dettes),
-            'page' => $page,
-            'perPage' => $perPage,
-            'storage_type' => get_class($this->cloudStorage)
-        ]);
-
-        return $dettes;
+        Log::info('ArchiveService: Retrieving archived dettes', ['query' => $query]);
+        $results = $this->cloudStorage->retrieve($query);
+        Log::info('ArchiveService: Retrieved archived dettes', ['count' => count($results)]);
+        return $results;
     }
-
 
     // Récupérer les détails d'une dette archivée
     public function getArchivedDetteDetails($detteId)
@@ -148,3 +138,5 @@ class ArchiveService
         }
     }
 }
+
+

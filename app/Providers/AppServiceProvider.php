@@ -14,6 +14,7 @@ use App\Facades\ClientObserverFacade;
 use App\Services\CloudStorageService;
 use App\Repositories\ClientRepository;
 use App\Repositories\UploadRepository;
+use App\Repositories\ArchiveRepository;
 use App\Repositories\ArticleRepository;
 use Illuminate\Support\ServiceProvider;
 use App\Interfaces\CloudStorageInterface;
@@ -48,6 +49,10 @@ class AppServiceProvider extends ServiceProvider
             return $driver === 'mongodb' ? new MongoDBArchiveRepository() : new FirebaseArchiveRepository();
         });
 
+        $this->app->singleton('archiveRepository', function ($app) {
+            return new ArchiveRepository($app->make(ArchiveRepositoryInterface::class));
+        });
+
         // Configuration du repository de messagerie
         $this->app->bind(MessageRepositoryInterface::class, function ($app) {
             $driver = config('message.driver', 'twilio');
@@ -55,7 +60,10 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->bind(ArchiveService::class, function ($app) {
-            return new ArchiveService($app->make(ArchiveRepositoryInterface::class));
+            return new ArchiveService(
+                $app->make(ArchiveRepositoryInterface::class),
+                $app->make(CloudStorageInterface::class) // Ajout de la dépendance manquante
+            );
         });
 
         $this->app->bind(MessageService::class, function ($app) {

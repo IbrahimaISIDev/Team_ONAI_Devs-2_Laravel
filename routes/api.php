@@ -7,10 +7,10 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DetteController;
 use App\Http\Controllers\ClientController;
-use App\Http\Controllers\ArticleController;
-use App\Jobs\EnvoyerRecapitulatifHebdomadaire;
-use App\Http\Controllers\PaiementController;
 use App\Http\Controllers\ArchiveController;
+use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\PaiementController;
+use App\Jobs\EnvoyerRecapitulatifHebdomadaire;
 
 Route::prefix('v1')->group(function () {
     /**
@@ -55,7 +55,7 @@ Route::prefix('v1')->group(function () {
             //Récupère les détails d'une dette spécifique.
             Route::get('/{dette}', [DetteController::class, 'show']);
 
-             // Nouvelles routes pour les filtres et les recherches
+            // Nouvelles routes pour les filtres et les recherches avancées
              Route::get('/filter', [DetteController::class, 'index']);
              Route::get('/search', [DetteController::class, 'index']);
              // Filtre les dettes en fonction de l'ID client.
@@ -73,35 +73,32 @@ Route::prefix('v1')->group(function () {
         /**
          * Gestion des paiements
          */
-
         Route::post('/dettes/{dette}/paiements', [PaiementController::class, 'store']);
 
         /**
          * Archivage des dettes
          */
         Route::prefix('archive')->group(function () {
-            //Récupère la liste de toutes les dettes archivées.
+            // Archiver toutes les dettes soldées
             Route::post('/dettes', [ArchiveController::class, 'archiveDettes']);
-            //Récupère la liste des dettes archivées pour une date spécifique.
-            Route::get('/{date}', [ArchiveController::class, 'show']);
-            //Affiche les dettes archivées avec des détails supplémentaires.
-            Route::get('/dettes', [DetteController::class, 'showArchived']);
-            //Affiche les détails d'une dette spécifique archivée.
-            Route::get('/dettes/{detteId}', [DetteController::class, 'showArchivedDetails']);
-            //Récupère toutes les dettes archivées pour un client spécifique.
-            Route::get('/clients/{clientId}/dettes', [DetteController::class, 'showClientArchived']);
+            // Voir les dettes archivées
+            Route::get('/dettes', [ArchiveController::class, 'showArchivedDettes']);
+            // Voir les détails d'une dette archivée
+            Route::get('/dettes/{detteId}', [ArchiveController::class, 'showArchivedDetails']);
+            // Voir les dettes archivées d'un client
+            Route::get('/clients/{clientId}/dettes', [ArchiveController::class, 'showClientArchivedDettes']);
         });
 
         /**
          * Restauration des dettes
          */
         Route::prefix('restaure')->group(function () {
-            //Récupère toutes les dettes qui peuvent être restaurées.
-            Route::get('/', [DetteController::class, 'restore']);
-            //Restaure une dette spécifique archivée.
-            Route::get('/dette/{detteId}', [DetteController::class, 'restoreDette']);
-            //Restaure toutes les dettes archivées d'un client spécifique.
-            Route::get('/client/{clientId}', [DetteController::class, 'restoreClientDettes']);
+            // Récupère toutes les dettes restaurables
+            Route::get('/', [ArchiveController::class, 'getRestorableDettes']);
+            // Restaurer une dette spécifique
+            Route::patch('/dette/{detteId}', [ArchiveController::class, 'restoreDette']);
+            // Restaurer toutes les dettes d'un client
+            Route::patch('/client/{clientId}', [ArchiveController::class, 'restoreClientDettes']);
         });
 
         /**

@@ -30,4 +30,28 @@ class FirebaseArchiveRepository implements ArchiveRepositoryInterface
             Log::error('Firebase archiving error: ' . $e->getMessage());
         }
     }
+
+    public function retrieve(array $data = [])
+    {
+        Log::info('Retrieving data from Firebase.');
+        try {
+            $reference = $this->database->getReference('archives');
+            $snapshot = $reference->getSnapshot();
+            return $snapshot->getValue();
+        } catch (\Exception $e) {
+            Log::error('Firebase retrieval error: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    public function restore(array $data)
+    {
+        Log::info('Restoring data in Firebase: ', $data);
+        try {
+            // Example restore logic: Re-add data to a different path or restore to original location
+            $this->database->getReference('restores/' . date('Y-m-d'))->push($data);
+        } catch (\Exception $e) {
+            Log::error('Firebase restore error: ' . $e->getMessage());
+        }
+    }
 }
